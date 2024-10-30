@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced To-Do List</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+  <div class="todo-container">
+    <h2> <i class="fa-solid fa-list"></i> To-Do List</h2>
+    <div class="todo-input-container">
+      <input type="text" id="todoInput" placeholder="Add new task..." />
+      <button onclick="addTodo()">Add  <i class="fa-solid fa-plus"></i></button>
+    </div>
+    <ul id="todoList"></ul>
+    <div class="filter-buttons">
+      <button onclick="filterTodos('all')" class="active" id="filter-all">All</button>
+      <button onclick="filterTodos('active')" id="filter-active">Active</button>
+      <button onclick="filterTodos('completed')" id="filter-completed">Completed</button>
+    </div>
+  </div>
+
+  <script>
+    let todos = [];
+
+    function addTodo() {
+      const todoInput = document.getElementById('todoInput');
+      const text = todoInput.value.trim();
+      if (text) {
+        todos.push({ text, completed: false });
+        todoInput.value = '';
+        renderTodos();
+      }
+    }
+
+    function deleteTodo(index) {
+      todos.splice(index, 1);
+      renderTodos();
+    }
+
+    function toggleComplete(index) {
+      todos[index].completed = !todos[index].completed;
+      renderTodos();
+    }
+
+    function filterTodos(filter) {
+      document.querySelectorAll('.filter-buttons button').forEach(button => button.classList.remove('active'));
+      document.getElementById(`filter-${filter}`).classList.add('active');
+      renderTodos(filter);
+    }
+
+    function renderTodos(filter = 'all') {
+      const todoList = document.getElementById('todoList');
+      todoList.innerHTML = '';
+      const filteredTodos = todos.filter(todo => {
+        if (filter === 'active') return !todo.completed;
+        if (filter === 'completed') return todo.completed;
+        return true;
+      });
+      filteredTodos.forEach((todo, index) => {
+        const li = document.createElement('li');
+        li.className = todo.completed ? 'completed' : '';
+        li.innerHTML = `
+          <label class="checkbox-container">
+            <input type="checkbox" onclick="toggleComplete(${index})" ${todo.completed ? 'checked' : ''}>
+            <span class="checkmark"></span>
+          </label>
+          <span class="todo-text">${todo.text}</span>
+          <button class="btn" onclick="deleteTodo(${index})">❌</button>
+        `;
+        todoList.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
